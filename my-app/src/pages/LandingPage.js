@@ -53,6 +53,10 @@ function LandingPage() {
     navigate('/find-a-mentor');
   };
 
+  const handleBecomeMentorClick = () => {
+    navigate('/become-a-mentor');
+  };
+
   return (
     <div className="landing-page">
       <div className="content-wrapper">
@@ -75,30 +79,34 @@ function LandingPage() {
         </header>
 
         <main className="hero" id="hero">
-          <div className="hero-text">
-            <div className="hero-headline">
-              <h1>Mentor Speed Dating</h1>
-              <p>
-                Connect with experienced professionals for quick, impactful
-                conversations.
-              </p>
+            <div className="hero-text">
+              <div className="hero-headline">
+                <h1>Mentor Speed Dating</h1>
+                <p>
+                  Connect with experienced professionals for quick, impactful
+                  conversations.
+                </p>
+              </div>
+              <div className="action-buttons">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleFindMentorClick}
+                >
+                  Find a Mentor
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleBecomeMentorClick}
+                >
+                  Become a Mentor
+                </button>
+                <button type="button" className="btn btn-ghost">
+                  How it Works?
+                </button>
+              </div>
             </div>
-            <div className="action-buttons">
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={handleFindMentorClick}
-              >
-                Find a Mentor
-              </button>
-              <button type="button" className="btn btn-secondary">
-                Become a Mentor
-              </button>
-              <button type="button" className="btn btn-ghost">
-                How it Works?
-              </button>
-            </div>
-          </div>
           <div
             className="hero-illustration"
             role="img"
@@ -142,42 +150,46 @@ function LandingPage() {
               looking for, feel free to contact us.
             </p>
           </div>
-          <div className="faq-list">
-            {faqs.map((faq) => (
-              <details key={faq.question} className="faq-item" open={faq.open}>
-                <summary>
-                  <span>{faq.question}</span>
-                  <span className="material-symbols-outlined" aria-hidden="true">
-                    expand_more
-                  </span>
-                </summary>
-                <p>{faq.answer}</p>
-              </details>
-            ))}
-          </div>
-        </section>
+            <div className="faq-list">
+              {faqs.map((faq) => (
+                <details key={faq.question} className="faq-item" open={faq.open}>
+                  <summary>
+                    <span>{faq.question}</span>
+                    <span className="material-symbols-outlined" aria-hidden="true">
+                      expand_more
+                    </span>
+                  </summary>
+                  <p>{faq.answer}</p>
+                </details>
+              ))}
+            </div>
+          </section>
 
-        <section className="section cta">
-          <div className="section-heading">
-            <h2>Ready to connect?</h2>
-            <p>
-              Join our community today and start making meaningful professional
-              connections that can accelerate your career.
-            </p>
-          </div>
-          <div className="cta-buttons">
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={handleFindMentorClick}
-            >
-              Find a Mentor
-            </button>
-            <button type="button" className="btn btn-secondary">
-              Become a Mentor
-            </button>
-          </div>
-        </section>
+          <section className="section cta">
+            <div className="section-heading">
+              <h2>Ready to connect?</h2>
+              <p>
+                Join our community today and start making meaningful professional
+                connections that can accelerate your career.
+              </p>
+            </div>
+            <div className="cta-buttons">
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleFindMentorClick}
+              >
+                Find a Mentor
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={handleBecomeMentorClick}
+              >
+                Become a Mentor
+              </button>
+            </div>
+          </section>
       </div>
     </div>
   );
