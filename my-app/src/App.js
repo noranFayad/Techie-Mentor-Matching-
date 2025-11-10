@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import MenteeOnboarding from './pages/MenteeOnboarding';
+import MentorOnboarding from './pages/MentorOnboarding';
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/find-a-mentor" element={<MenteeOnboarding />} />
+        <Route path="/become-a-mentor" element={<MentorOnboarding />} />
       </Routes>
     </Router>
   );
