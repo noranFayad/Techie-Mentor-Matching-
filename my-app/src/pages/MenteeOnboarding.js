@@ -47,9 +47,48 @@ function MenteeOnboarding() {
   const [techRole, setTechRole] = useState('');
   const [mentorshipFocus, setMentorshipFocus] = useState('');
   const [customMentorshipFocus, setCustomMentorshipFocus] = useState('');
+  const [careerGoals, setCareerGoals] = useState('');
+  const [techChallenge, setTechChallenge] = useState('');
+  const [projectHighlight, setProjectHighlight] = useState('');
+  const [motivation, setMotivation] = useState('');
+  const [funFact, setFunFact] = useState('');
+
+  const totalQuestions = 10;
+  const hasCareerGoals = careerGoals.trim().length > 0;
+  const hasMentorshipSelect = mentorshipFocus && mentorshipFocus !== 'custom';
+  const hasMentorshipCustom = customMentorshipFocus.trim().length > 0;
+  const mentorshipQuestionAnswered = hasMentorshipSelect || hasMentorshipCustom;
+  const hasTechChallenge = techChallenge.trim().length > 0;
+  const hasProjectHighlight = projectHighlight.trim().length > 0;
+  const hasMotivation = motivation.trim().length > 0;
+  const hasFunFact = funFact.trim().length > 0;
+
+  const answeredQuestions = [
+    Boolean(techRole),
+    hasCareerGoals,
+    mentorshipQuestionAnswered,
+    Boolean(learningStyle),
+    hasTechChallenge,
+    Boolean(frequency),
+    Boolean(mentorshipPreference),
+    hasProjectHighlight,
+    hasMotivation,
+    hasFunFact,
+  ];
+
+  const answeredCount = answeredQuestions.filter(Boolean).length;
+  const progressValue =
+    totalQuestions === 0
+      ? 0
+      : Math.min(100, (answeredCount / totalQuestions) * 100);
+  const displayedProgress = Math.round(progressValue);
+  const isComplete = answeredCount === totalQuestions;
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (!isComplete) {
+      return;
+    }
     // Future integration point for API submission.
   };
 
@@ -85,10 +124,19 @@ function MenteeOnboarding() {
           <div className="mentee-progress">
             <div className="mentee-progress__top">
               <span className="mentee-progress__label">Profile Completion</span>
-              <span className="mentee-progress__value">3/10 answered</span>
+              <span className="mentee-progress__value">
+                {answeredCount}/{totalQuestions} answered
+              </span>
             </div>
-            <div className="mentee-progress__bar" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100">
-              <span />
+            <div
+              className="mentee-progress__bar"
+              role="progressbar"
+              aria-valuenow={displayedProgress}
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuetext={`${displayedProgress}% complete`}
+            >
+              <span style={{ width: `${progressValue}%` }} />
             </div>
           </div>
 
@@ -120,6 +168,8 @@ function MenteeOnboarding() {
                 id="career-goals"
                 className="mentee-textarea"
                 placeholder="e.g., Get promoted, learn a new framework"
+                value={careerGoals}
+                onChange={(event) => setCareerGoals(event.target.value)}
               />
             </div>
 
@@ -181,6 +231,8 @@ function MenteeOnboarding() {
                 id="tech-challenge"
                 className="mentee-textarea"
                 placeholder="Describe a problem or concept you're wrestling with"
+                value={techChallenge}
+                onChange={(event) => setTechChallenge(event.target.value)}
               />
             </div>
 
@@ -238,6 +290,8 @@ function MenteeOnboarding() {
                 id="project-highlight"
                 className="mentee-textarea"
                 placeholder="Briefly describe your project"
+                value={projectHighlight}
+                onChange={(event) => setProjectHighlight(event.target.value)}
               />
             </div>
 
@@ -249,6 +303,8 @@ function MenteeOnboarding() {
                 id="motivation"
                 className="mentee-textarea"
                 placeholder="e.g., Solving complex problems, building cool products..."
+                value={motivation}
+                onChange={(event) => setMotivation(event.target.value)}
               />
             </div>
 
@@ -260,12 +316,16 @@ function MenteeOnboarding() {
                 id="fun-fact"
                 className="mentee-textarea short"
                 placeholder="e.g., I'm a competitive rock climber."
+                value={funFact}
+                onChange={(event) => setFunFact(event.target.value)}
               />
             </div>
 
             <div className="mentee-action-bar">
               <Link to="/">I'll do this later</Link>
-              <button type="submit">Save &amp; Continue</button>
+              <button type="submit" disabled={!isComplete}>
+                Save &amp; Continue
+              </button>
             </div>
           </form>
         </section>

@@ -349,6 +349,14 @@
   outline-offset: 4px;
 }
 
+.mentee-action-bar button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+  pointer-events: none;
+}
+
 @media (max-width: 768px) {
   .mentee-header {
     flex-direction: column;
