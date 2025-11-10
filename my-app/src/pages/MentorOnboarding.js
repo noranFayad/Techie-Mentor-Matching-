@@ -107,8 +107,20 @@ function MentorOnboarding() {
       return;
     }
 
-    // Placeholder: integrate with submission flow when backend is ready.
-    navigate('/'); // Temporary success path.
+    const profileSnapshot = {
+      expertise,
+      mentoringTopics,
+      jobTitle,
+      experience,
+      mentorshipStyle,
+      menteeQuestions,
+      availability,
+      accomplishment,
+      earlyLesson,
+      funFact,
+    };
+
+    navigate('/matches', { state: { role: 'mentor', viewerProfile: profileSnapshot } });
   };
 
   return (

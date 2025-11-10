@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './MenteeOnboarding.css';
 
 const roleOptions = [
@@ -41,6 +41,7 @@ const mentorshipPreferenceOptions = [
 ];
 
 function MenteeOnboarding() {
+  const navigate = useNavigate();
   const [learningStyle, setLearningStyle] = useState('');
   const [frequency, setFrequency] = useState('');
   const [mentorshipPreference, setMentorshipPreference] = useState('');
@@ -89,7 +90,34 @@ function MenteeOnboarding() {
     if (!isComplete) {
       return;
     }
-    // Future integration point for API submission.
+
+    const resolvedFocus =
+      mentorshipFocus === 'custom' && customMentorshipFocus.trim().length > 0
+        ? customMentorshipFocus.trim()
+        : mentorshipFocus;
+
+    const learningStyleLabel =
+      learningStyleOptions.find((option) => option.value === learningStyle)?.label || '';
+    const frequencyLabel =
+      frequencyOptions.find((option) => option.value === frequency)?.label || '';
+    const mentorshipPreferenceLabel =
+      mentorshipPreferenceOptions.find((option) => option.value === mentorshipPreference)?.label ||
+      '';
+
+    const profileSnapshot = {
+      techRole,
+      careerGoals,
+      mentorshipFocus: resolvedFocus,
+      learningStyle: learningStyleLabel,
+      techChallenge,
+      frequency: frequencyLabel,
+      mentorshipPreference: mentorshipPreferenceLabel,
+      projectHighlight,
+      motivation,
+      funFact,
+    };
+
+    navigate('/matches', { state: { role: 'mentee', viewerProfile: profileSnapshot } });
   };
 
   return (
