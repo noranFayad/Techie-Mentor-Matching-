@@ -342,7 +342,7 @@ function MatchesPage() {
   const dragStartX = useRef(0);
   const dragOffsetRef = useRef(0);
   const draggingRef = useRef(false);
-  const [showMutualMatch, setShowMutualMatch] = useState(false);
+  const [mutualMatchProfile, setMutualMatchProfile] = useState(null);
 
   useEffect(() => {
     setActiveIndex(0);
@@ -393,7 +393,7 @@ function MatchesPage() {
         setActiveIndex((prev) => prev + 1);
 
         if (shouldShowMutual) {
-          setShowMutualMatch(true);
+          setMutualMatchProfile(currentProfile);
         }
 
         if (!isLastCard) {
@@ -552,7 +552,7 @@ function MatchesPage() {
           </div>
         )}
 
-        {showMutualMatch && currentProfile?.isMutualMatch && (
+        {mutualMatchProfile && (
           <div
             className="matches-modal"
             role="dialog"
@@ -561,27 +561,27 @@ function MatchesPage() {
           >
             <div
               className="matches-modal__backdrop"
-              onClick={() => setShowMutualMatch(false)}
+              onClick={() => setMutualMatchProfile(null)}
               aria-hidden="true"
             />
             <div className="matches-modal__content">
               <h2 id="mutual-match-heading">It’s a mutual match!</h2>
               <p>
-                {currentProfile.name} has already approved you. Book a “Get to
-                Know You” call to keep the momentum going.
+                {mutualMatchProfile.name} has already approved you. Book a “Get
+                to Know You” call to keep the momentum going.
               </p>
               <div className="matches-modal__actions">
                 <a
                   className="matches-modal__button matches-modal__button--primary"
                   href="/book-gtk-call"
-                  onClick={() => setShowMutualMatch(false)}
+                  onClick={() => setMutualMatchProfile(null)}
                 >
                   Book a GTK call
                 </a>
                 <button
                   type="button"
                   className="matches-modal__button"
-                  onClick={() => setShowMutualMatch(false)}
+                  onClick={() => setMutualMatchProfile(null)}
                 >
                   Maybe later
                 </button>
