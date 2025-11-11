@@ -382,6 +382,9 @@ function MatchesPage() {
       }
 
       const isLastCard = activeIndex + 1 >= profiles.length;
+      const shouldShowMutual =
+        decision === "approve" && currentProfile.isMutualMatch;
+
       setAnimationState(decision);
       setToast(decision);
 
@@ -389,14 +392,11 @@ function MatchesPage() {
         const nextIndex = activeIndex + 1;
         setActiveIndex((prev) => prev + 1);
 
+        if (shouldShowMutual) {
+          setShowMutualMatch(true);
+        }
+
         if (!isLastCard) {
-          if (
-            userRole === "mentee" &&
-            nextIndex < profiles.length &&
-            profiles[nextIndex].isMutualMatch
-          ) {
-            setShowMutualMatch(true);
-          }
           setAnimationState("enter");
         } else {
           setAnimationState(null);
@@ -419,9 +419,6 @@ function MatchesPage() {
     dragOffsetRef.current = 0;
     setDragOffset(0);
     setIsDragging(false);
-    if (!currentProfile?.isMutualMatch) {
-      setShowMutualMatch(false);
-    }
   }, [currentProfile]);
 
   const handleCardPointerDown = useCallback(
