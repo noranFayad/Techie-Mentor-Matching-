@@ -436,48 +436,61 @@ function MatchesPage() {
             </span>
             <span>{ACTION_COPY[toast]}</span>
           </div>
-        )}
+          )}
 
           {currentProfile ? (
-            <article
-              className={`match-card ${animationState ? `match-card--${animationState}` : ''}`}
-              aria-describedby={`profile-${currentProfile.id}`}
-            >
-              <div className="match-card__content">
-                <div className="match-card__primary">
-                  <div className="match-card__header">
-                    <div
-                      className="match-card__avatar"
-                      style={{ backgroundImage: `url(${currentProfile.avatar})` }}
-                      aria-hidden="true"
-                    />
-                    <div className="match-card__identity">
-                      <div className="match-card__meta">
-                        <span className="match-card__badge">
-                          {userRole === 'mentor' ? 'Mentee' : 'Mentor'}
-                        </span>
-                        <span className="match-card__location">{currentProfile.location}</span>
+            <div className="matches-body">
+              <article
+                className={`match-card ${animationState ? `match-card--${animationState}` : ''}`}
+                aria-describedby={`profile-${currentProfile.id}`}
+              >
+                <div className="match-card__content">
+                  <div className="match-card__primary">
+                    <div className="match-card__header">
+                      <div
+                        className="match-card__avatar"
+                        style={{ backgroundImage: `url(${currentProfile.avatar})` }}
+                        aria-hidden="true"
+                      />
+                      <div className="match-card__identity">
+                        <div className="match-card__meta">
+                          <span className="match-card__badge">
+                            {userRole === 'mentor' ? 'Mentee' : 'Mentor'}
+                          </span>
+                          <span className="match-card__location">{currentProfile.location}</span>
+                        </div>
+                        <h2 id={`profile-${currentProfile.id}`}>{currentProfile.name}</h2>
+                        <p className="match-card__headline">{currentProfile.headline}</p>
                       </div>
-                      <h2 id={`profile-${currentProfile.id}`}>{currentProfile.name}</h2>
-                      <p className="match-card__headline">{currentProfile.headline}</p>
+                      <button
+                        type="button"
+                        className="match-card__menu"
+                        aria-label="More actions"
+                      >
+                        <span className="material-symbols-outlined" aria-hidden="true">
+                          more_horiz
+                        </span>
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      className="match-card__menu"
-                      aria-label="More actions"
-                    >
-                      <span className="material-symbols-outlined" aria-hidden="true">
-                        more_horiz
-                      </span>
-                    </button>
+
+                    <p className="match-card__tagline">{currentProfile.tagline}</p>
+
+                    {highlightSections.length > 0 && (
+                      <ul className="match-card__highlights">
+                        {highlightSections.map((section) => (
+                          <li key={`highlight-${section.label}`}>
+                            <h3>{section.label}</h3>
+                            <p>{section.value}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
 
-                  <p className="match-card__tagline">{currentProfile.tagline}</p>
-
-                  {highlightSections.length > 0 && (
-                    <ul className="match-card__highlights">
-                      {highlightSections.map((section) => (
-                        <li key={`highlight-${section.label}`}>
+                  {detailSections.length > 0 && (
+                    <ul className="match-card__sections">
+                      {detailSections.map((section) => (
+                        <li key={section.label}>
                           <h3>{section.label}</h3>
                           <p>{section.value}</p>
                         </li>
@@ -485,20 +498,33 @@ function MatchesPage() {
                     </ul>
                   )}
                 </div>
-
-                {detailSections.length > 0 && (
-                  <ul className="match-card__sections">
-                    {detailSections.map((section) => (
-                      <li key={section.label}>
-                        <h3>{section.label}</h3>
-                        <p>{section.value}</p>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </article>
-        ) : (
+              </article>
+              <aside className="matches-actions" aria-label="Match actions">
+                <button
+                  type="button"
+                  className="matches-actions__button matches-actions__button--reject"
+                  onClick={() => handleDecision('reject')}
+                  disabled={!currentProfile}
+                >
+                  <span className="material-symbols-outlined" aria-hidden="true">
+                    thumb_down
+                  </span>
+                  <span>Pass</span>
+                </button>
+                <button
+                  type="button"
+                  className="matches-actions__button matches-actions__button--approve"
+                  onClick={() => handleDecision('approve')}
+                  disabled={!currentProfile}
+                >
+                  <span className="material-symbols-outlined" aria-hidden="true">
+                    favorite
+                  </span>
+                  <span>Approve</span>
+                </button>
+              </aside>
+            </div>
+          ) : (
           <div className="matches-empty">
             <div className="matches-empty__illustration" aria-hidden="true">
               <span className="material-symbols-outlined">hourglass_empty</span>
@@ -518,31 +544,6 @@ function MatchesPage() {
             </div>
           </div>
         )}
-
-        <div className="matches-actions">
-          <button
-            type="button"
-            className="matches-actions__button matches-actions__button--reject"
-            onClick={() => handleDecision('reject')}
-            disabled={!currentProfile}
-          >
-            <span className="material-symbols-outlined" aria-hidden="true">
-              thumb_down
-            </span>
-            <span>Pass</span>
-          </button>
-          <button
-            type="button"
-            className="matches-actions__button matches-actions__button--approve"
-            onClick={() => handleDecision('approve')}
-            disabled={!currentProfile}
-          >
-            <span className="material-symbols-outlined" aria-hidden="true">
-              favorite
-            </span>
-            <span>Approve</span>
-          </button>
-        </div>
       </main>
     </div>
   );
