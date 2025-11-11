@@ -2,9 +2,20 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: radial-gradient(120% 120% at 20% 20%, #2b3670 0%, #10142b 55%, #0a0d1f 100%);
+  background: radial-gradient(
+    120% 120% at 20% 20%,
+    #2b3670 0%,
+    #10142b 55%,
+    #0a0d1f 100%
+  );
   color: #f5f7ff;
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
 }
 
 .matches-header {
@@ -36,7 +47,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease, background 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
   cursor: pointer;
 }
 
@@ -100,7 +113,9 @@
   border-radius: 999px;
   padding: 6px 16px;
   cursor: pointer;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .matches-header__profile button:hover {
@@ -159,7 +174,10 @@
   gap: 12px;
   border-radius: 24px;
   box-shadow: 0 20px 45px rgba(9, 14, 40, 0.4);
-  transition: transform 0.24s ease, box-shadow 0.24s ease, background 0.24s ease;
+  transition:
+    transform 0.24s ease,
+    box-shadow 0.24s ease,
+    background 0.24s ease;
 }
 
 .matches-card-shell .matches-actions__button:hover:not(:disabled) {
@@ -217,19 +235,23 @@
 
 .matches-toast {
   position: fixed;
-  top: clamp(18px, 4vh, 32px);
-  right: clamp(18px, 4vw, 36px);
+  left: 50%;
+  bottom: clamp(20px, 4vh, 36px);
+  transform: translate(-50%, 0);
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 18px;
-  border-radius: 12px;
+  gap: 10px;
+  padding: 14px 20px;
+  border-radius: 16px;
   font-weight: 600;
-  font-size: 0.85rem;
-  box-shadow: 0 16px 32px rgba(20, 26, 56, 0.45);
+  font-size: 0.9rem;
+  box-shadow: 0 20px 45px rgba(12, 18, 46, 0.55);
   animation: toastIn 0.3s ease forwards;
   z-index: 1200;
   pointer-events: none;
+  max-width: calc(100% - 40px);
+  text-align: center;
+  justify-content: center;
 }
 
 .matches-toast--approve {
@@ -242,13 +264,103 @@
   color: #ffb5c5;
 }
 
+.matches-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1500;
+}
+
+.matches-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 6, 16, 0.55);
+  backdrop-filter: blur(8px);
+}
+
+.matches-modal__content {
+  position: relative;
+  width: min(420px, 90%);
+  padding: 32px 28px;
+  border-radius: 24px;
+  background: linear-gradient(
+    180deg,
+    rgba(21, 26, 55, 0.96) 0%,
+    rgba(14, 18, 40, 0.94) 100%
+  );
+  box-shadow: 0 30px 66px rgba(5, 8, 22, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  text-align: center;
+  z-index: 1;
+}
+
+.matches-modal__content h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
+}
+
+.matches-modal__content p {
+  margin: 0;
+  color: rgba(214, 222, 255, 0.85);
+  line-height: 1.6;
+}
+
+.matches-modal__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.matches-modal__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  border-radius: 999px;
+  border: none;
+  text-decoration: none;
+  font-weight: 600;
+  color: rgba(231, 235, 255, 0.9);
+  background: rgba(77, 96, 190, 0.28);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.matches-modal__button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(12, 16, 36, 0.4);
+}
+
+.matches-modal__button--primary {
+  background: linear-gradient(135deg, #5e7bff 0%, #9c5bff 100%);
+  color: #fff;
+}
+
+.matches-modal__button--primary:hover {
+  background: linear-gradient(135deg, #6d86ff 0%, #a96bff 100%);
+}
+
+.matches-modal__button:focus-visible {
+  outline: 2px solid rgba(150, 179, 255, 0.8);
+  outline-offset: 2px;
+}
+
 @keyframes toastIn {
   from {
-    transform: translateY(12px);
+    transform: translate(-50%, 24px);
     opacity: 0;
   }
   to {
-    transform: translateY(0);
+    transform: translate(-50%, 0);
     opacity: 1;
   }
 }
@@ -266,7 +378,10 @@
   max-height: calc(100vh - 320px);
   overflow: hidden;
   cursor: grab;
-  transition: transform 0.28s ease, opacity 0.28s ease, box-shadow 0.28s ease;
+  transition:
+    transform 0.28s ease,
+    opacity 0.28s ease,
+    box-shadow 0.28s ease;
   opacity: 1;
 }
 
@@ -339,7 +454,12 @@
   top: 0;
   padding-bottom: 18px;
   margin-bottom: 18px;
-  background: linear-gradient(180deg, rgba(17, 20, 44, 0.96) 0%, rgba(17, 20, 44, 0.85) 85%, rgba(17, 20, 44, 0) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(17, 20, 44, 0.96) 0%,
+    rgba(17, 20, 44, 0.85) 85%,
+    rgba(17, 20, 44, 0) 100%
+  );
   backdrop-filter: blur(12px);
   z-index: 2;
 }
@@ -410,7 +530,9 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 
 .match-card__menu:hover {
@@ -476,7 +598,10 @@
   justify-content: center;
   gap: 10px;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .matches-actions__button:disabled {
@@ -550,7 +675,10 @@
   border: none;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 .matches-empty__actions button:hover {
