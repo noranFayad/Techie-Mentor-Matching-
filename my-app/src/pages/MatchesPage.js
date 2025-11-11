@@ -514,8 +514,20 @@ function MatchesPage() {
           </div>
         )}
 
-          <div className="matches-card-area">
-            {currentProfile ? (
+        <div className="matches-card-area">
+          {currentProfile ? (
+            <div className="matches-card-shell" role="group" aria-label="Match actions">
+              <button
+                type="button"
+                className="matches-actions__button matches-actions__button--reject"
+                onClick={() => handleDecision('reject')}
+                disabled={!currentProfile}
+              >
+                <span className="material-symbols-outlined" aria-hidden="true">
+                  thumb_down
+                </span>
+                <span>Pass</span>
+              </button>
               <article
                 className={`match-card${animationState ? ` match-card--${animationState}` : ''}${
                   isDragging ? ' match-card--dragging' : ''
@@ -563,52 +575,39 @@ function MatchesPage() {
                   </ul>
                 </div>
               </article>
-            ) : (
-              <div className="matches-empty">
-                <div className="matches-empty__illustration" aria-hidden="true">
-                  <span className="material-symbols-outlined">hourglass_empty</span>
-                </div>
-                <h2>You’re caught up for now</h2>
-                <p>
-                  We’ll notify you when new {userRole === 'mentor' ? 'mentees' : 'mentors'} are ready to
-                  review. In the meantime, invite others to join your network.
-                </p>
-                <div className="matches-empty__actions">
-                  <button type="button" onClick={handleGoHome}>
-                    Back to dashboard
-                  </button>
-                  <button type="button" className="secondary">
-                    Invite someone
-                  </button>
-                </div>
+              <button
+                type="button"
+                className="matches-actions__button matches-actions__button--approve"
+                onClick={() => handleDecision('approve')}
+                disabled={!currentProfile}
+              >
+                <span className="material-symbols-outlined" aria-hidden="true">
+                  favorite
+                </span>
+                <span>Approve</span>
+              </button>
+            </div>
+          ) : (
+            <div className="matches-empty">
+              <div className="matches-empty__illustration" aria-hidden="true">
+                <span className="material-symbols-outlined">hourglass_empty</span>
               </div>
-            )}
-          </div>
-
-          <div className="matches-actions" role="group" aria-label="Match actions">
-            <button
-              type="button"
-              className="matches-actions__button matches-actions__button--reject"
-              onClick={() => handleDecision('reject')}
-              disabled={!currentProfile}
-            >
-              <span className="material-symbols-outlined" aria-hidden="true">
-                thumb_down
-              </span>
-              <span>Pass</span>
-            </button>
-            <button
-              type="button"
-              className="matches-actions__button matches-actions__button--approve"
-              onClick={() => handleDecision('approve')}
-              disabled={!currentProfile}
-            >
-              <span className="material-symbols-outlined" aria-hidden="true">
-                favorite
-              </span>
-              <span>Approve</span>
-            </button>
-          </div>
+              <h2>You’re caught up for now</h2>
+              <p>
+                We’ll notify you when new {userRole === 'mentor' ? 'mentees' : 'mentors'} are ready to
+                review. In the meantime, invite others to join your network.
+              </p>
+              <div className="matches-empty__actions">
+                <button type="button" onClick={handleGoHome}>
+                  Back to dashboard
+                </button>
+                <button type="button" className="secondary">
+                  Invite someone
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );
