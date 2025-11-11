@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './MatchesPage.css';
 
@@ -208,6 +208,8 @@ const ACTION_COPY = {
   reject: 'Skipped this profile',
 };
 
+const DRAG_THRESHOLD = 140;
+
 function getMentorSections(profile) {
   if (!profile) return [];
   return [
@@ -315,6 +317,11 @@ function MatchesPage() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [animationState, setAnimationState] = useState('enter');
   const [toast, setToast] = useState(null);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartX = useRef(0);
+  const dragOffsetRef = useRef(0);
+  const draggingRef = useRef(false);
 
   useEffect(() => {
     setActiveIndex(0);
@@ -343,29 +350,27 @@ function MatchesPage() {
       ? getMenteeSections(currentProfile)
       : getMentorSections(currentProfile);
 
-  const highlightCount =
-    sections.length > 6 ? 3 : sections.length > 0 ? Math.min(2, sections.length) : 0;
-  const highlightSections = sections.slice(0, highlightCount);
-  const detailSections = sections.slice(highlightCount);
-
-  const handleDecision = (decision) => {
-    if (!currentProfile || animationState === 'approve' || animationState === 'reject') {
-      return;
-    }
-
-    const isLastCard = activeIndex + 1 >= profiles.length;
-    setAnimationState(decision);
-    setToast(decision);
-
-    window.setTimeout(() => {
-      setActiveIndex((prev) => prev + 1);
-      if (!isLastCard) {
-        setAnimationState('enter');
-      } else {
-        setAnimationState(null);
+  const handleDecision = useCallback(
+    (decision) => {
+      if (!currentProfile || animationState === 'approve' || animationState === 'reject') {
+        return;
       }
-    }, 320);
-  };
+
+      const isLastCard = activeIndex + 1 >= profiles.length;
+      setAnimationState(decision);
+      setToast(decision);
+
+      window.setTimeout(() => {
+        setActiveIndex((prev) => prev + 1);
+        if (!isLastCard) {
+          setAnimationState('enter');
+        } else {
+          setAnimationState(null);
+        }
+      }, 320);
+    },
+    [activeIndex, animationState, currentProfile, profiles.length]
+  );
 
   const handleBackToForm = () => {
     navigate(userRole === 'mentor' ? '/become-a-mentor' : '/find-a-mentor');
@@ -375,9 +380,80 @@ function MatchesPage() {
     navigate('/');
   };
 
+  useEffect(() => {
+    draggingRef.current = false;
+    dragOffsetRef.current = 0;
+    setDragOffset(0);
+    setIsDragging(false);
+  }, [currentProfile]);
+
+  const handleCardPointerDown = useCallback(
+    (event) => {
+      if (!currentProfile || animationState === 'approve' || animationState === 'reject') {
+        return;
+      }
+      const target = event.target;
+      if (target instanceof Element) {
+        const interactiveAncestor = target.closest('button, a');
+        if (interactiveAncestor) {
+          return;
+        }
+      }
+      event.preventDefault();
+      draggingRef.current = true;
+      dragStartX.current = event.clientX;
+      dragOffsetRef.current = 0;
+      setIsDragging(true);
+      setDragOffset(0);
+      event.currentTarget.setPointerCapture?.(event.pointerId);
+    },
+    [animationState, currentProfile]
+  );
+
+  const handleCardPointerMove = useCallback((event) => {
+    if (!draggingRef.current) {
+      return;
+    }
+    event.preventDefault();
+    const delta = event.clientX - dragStartX.current;
+    dragOffsetRef.current = delta;
+    setDragOffset(delta);
+  }, []);
+
+  const handleCardPointerUp = useCallback(
+    (event) => {
+      if (!draggingRef.current) {
+        return;
+      }
+      event.preventDefault();
+      draggingRef.current = false;
+      if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      }
+      const delta = dragOffsetRef.current;
+      setIsDragging(false);
+      if (Math.abs(delta) >= DRAG_THRESHOLD) {
+        setDragOffset(0);
+        handleDecision(delta > 0 ? 'approve' : 'reject');
+      } else {
+        setDragOffset(0);
+      }
+    },
+    [handleDecision]
+  );
+
   const progressLabel = currentProfile
     ? `Profile ${activeIndex + 1} of ${profiles.length}`
     : 'You’re all caught up';
+
+  const cardStyle = animationState
+    ? undefined
+    : {
+        transform: `translate3d(${dragOffset}px, 0, 0) rotate(${Math.max(
+          -12,
+          Math.min(12, dragOffset * 0.02)
+        )}deg)`,
+      };
 
   return (
     <div className={`matches-page matches-page--${userRole}`}>
@@ -438,14 +514,20 @@ function MatchesPage() {
           </div>
         )}
 
-        {currentProfile ? (
-          <div className="matches-body">
-            <article
-              className={`match-card ${animationState ? `match-card--${animationState}` : ''}`}
-              aria-describedby={`profile-${currentProfile.id}`}
-            >
-              <div className="match-card__content">
-                <div className="match-card__primary">
+          <div className="matches-card-area">
+            {currentProfile ? (
+              <article
+                className={`match-card${animationState ? ` match-card--${animationState}` : ''}${
+                  isDragging ? ' match-card--dragging' : ''
+                }`}
+                aria-describedby={`profile-${currentProfile.id}`}
+                style={cardStyle}
+                onPointerDown={handleCardPointerDown}
+                onPointerMove={handleCardPointerMove}
+                onPointerUp={handleCardPointerUp}
+                onPointerCancel={handleCardPointerUp}
+              >
+                <div className="match-card__content">
                   <div className="match-card__header">
                     <div
                       className="match-card__avatar"
@@ -471,75 +553,62 @@ function MatchesPage() {
 
                   <p className="match-card__tagline">{currentProfile.tagline}</p>
 
-                  {highlightSections.length > 0 && (
-                    <ul className="match-card__highlights">
-                      {highlightSections.map((section) => (
-                        <li key={`highlight-${section.label}`}>
-                          <h3>{section.label}</h3>
-                          <p>{section.value}</p>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-
-                {detailSections.length > 0 && (
                   <ul className="match-card__sections">
-                    {detailSections.map((section) => (
+                    {sections.map((section) => (
                       <li key={section.label}>
                         <h3>{section.label}</h3>
                         <p>{section.value}</p>
                       </li>
                     ))}
                   </ul>
-                )}
+                </div>
+              </article>
+            ) : (
+              <div className="matches-empty">
+                <div className="matches-empty__illustration" aria-hidden="true">
+                  <span className="material-symbols-outlined">hourglass_empty</span>
+                </div>
+                <h2>You’re caught up for now</h2>
+                <p>
+                  We’ll notify you when new {userRole === 'mentor' ? 'mentees' : 'mentors'} are ready to
+                  review. In the meantime, invite others to join your network.
+                </p>
+                <div className="matches-empty__actions">
+                  <button type="button" onClick={handleGoHome}>
+                    Back to dashboard
+                  </button>
+                  <button type="button" className="secondary">
+                    Invite someone
+                  </button>
+                </div>
               </div>
-            </article>
-            <aside className="matches-actions" aria-label="Match actions">
-              <button
-                type="button"
-                className="matches-actions__button matches-actions__button--reject"
-                onClick={() => handleDecision('reject')}
-                disabled={!currentProfile}
-              >
-                <span className="material-symbols-outlined" aria-hidden="true">
-                  thumb_down
-                </span>
-                <span>Pass</span>
-              </button>
-              <button
-                type="button"
-                className="matches-actions__button matches-actions__button--approve"
-                onClick={() => handleDecision('approve')}
-                disabled={!currentProfile}
-              >
-                <span className="material-symbols-outlined" aria-hidden="true">
-                  favorite
-                </span>
-                <span>Approve</span>
-              </button>
-            </aside>
+            )}
           </div>
-        ) : (
-          <div className="matches-empty">
-            <div className="matches-empty__illustration" aria-hidden="true">
-              <span className="material-symbols-outlined">hourglass_empty</span>
-            </div>
-            <h2>You’re caught up for now</h2>
-            <p>
-              We’ll notify you when new {userRole === 'mentor' ? 'mentees' : 'mentors'} are ready to
-              review. In the meantime, invite others to join your network.
-            </p>
-            <div className="matches-empty__actions">
-              <button type="button" onClick={handleGoHome}>
-                Back to dashboard
-              </button>
-              <button type="button" className="secondary">
-                Invite someone
-              </button>
-            </div>
+
+          <div className="matches-actions" role="group" aria-label="Match actions">
+            <button
+              type="button"
+              className="matches-actions__button matches-actions__button--reject"
+              onClick={() => handleDecision('reject')}
+              disabled={!currentProfile}
+            >
+              <span className="material-symbols-outlined" aria-hidden="true">
+                thumb_down
+              </span>
+              <span>Pass</span>
+            </button>
+            <button
+              type="button"
+              className="matches-actions__button matches-actions__button--approve"
+              onClick={() => handleDecision('approve')}
+              disabled={!currentProfile}
+            >
+              <span className="material-symbols-outlined" aria-hidden="true">
+                favorite
+              </span>
+              <span>Approve</span>
+            </button>
           </div>
-        )}
       </main>
     </div>
   );
